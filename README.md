@@ -20,8 +20,8 @@ Repo: https://github.com/kubernetes-csi/csi-driver-smb/tree/master/charts/v1.8.0
 ```bash
 export namespace="smb-csi-driver"
 
-suo kubectl create namespace 
-helm install csi-driver-smb csi-driver-smb/csi-driver-smb/v1.8.0 --namespace ${namespace}
+suo kubectl create namespace ${namespace}
+helm install csi-driver-smb csi-driver-smb/csi-driver-smb/v1.8.0 --n ${namespace}
 ```
 
 ### Create PV and PVC
