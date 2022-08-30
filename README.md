@@ -24,10 +24,67 @@ suo kubectl create namespace ${namespace}
 helm install csi-driver-smb csi-driver-smb/csi-driver-smb/v1.8.0 --n ${namespace}
 ```
 
-### Create PV and PVC
-TODO
+### Create PV
 
+```yaml
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: pv-my-apps-backup
+  namespace: my-namespace
+spec:
+  capacity:
+    storage: 5Gi
+  nfs:
+    server: server-name
+    path: /data/path/to/folder/
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+```
 
-### Create testing pod
-TODO
+### Create PVC
+
+```yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-my-apps-backup
+  namespace: my-namespace
+  finalizers:
+    - kubernetes.io/pvc-protection
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5G
+  volumeName: pv-my-apps-backup
+  storageClassName: ''
+  volumeMode: Filesystem 
+```
+
+### Create testing pod to attach PVC
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pv-nfs-example
+  labels:
+    app: hello-app
+  namespace: my-namespace-test
+spec:
+  containers:
+    - name: namespace-test
+      image: testing:1.0.0
+      volumeMounts:
+        - name: my-apps-backup
+          mountPath: /my-apps-backup
+  volumes:
+    - name: my-apps-backup
+      persistentVolumeClaim:
+        claimName: pvc-my-apps-backup
+```
 
